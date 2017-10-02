@@ -9,6 +9,12 @@ class Image
 public:
 
 	Image();
+
+	// NOVO
+	Image( const Image& img );
+	// NOVO
+	Image& operator=( const Image& img );
+
 	Image( pixel bg, int width, int height );
 	
 	~Image();
@@ -35,20 +41,13 @@ public:
 	{
 		return pixels[i];
 	}
-	
-	Image(const Image& img ){
-		return Image
-	}
-	
-	Image& operator= (Image& img ){
-		return Image
-	}
 
 private:
-
-	void _allocate(int w, int h);
+	// NOVO
+	void _allocate( int w, int h );
+	// NOVO
 	void _deallocate();
-	 
+
 	pixel_row* pixels;
 	pixel_row  buffer;
 	int width;

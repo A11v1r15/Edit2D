@@ -4,6 +4,8 @@
 #include <GL/gl.h>
 #include <iostream>
 #include <cstdio>
+#include <cstdlib>
+#include <cstring>
 
 // =========================================================================================
 // Classe Imagem
@@ -13,19 +15,69 @@ Image::Image()
 {
 }
 // =========================================================================================
-Image::Image( pixel bg, int w, int h )
-	: pixels(0), buffer(0), width(w), height(h)
+Image::Image( const Image& img )
+	: pixels(0), buffer(0), width(0), height(0)
 {
-	pixels = new pixel_row[ height ];
-	buffer = new pixel[ width*height ];
-	
-	for( int i=0; i<height ; ++i )
-	{
-		pixels[i] = &buffer[ i*width ];
-		//pixels[i] = buffer + (i*width); // equivalente
-	}
+	// NOVO reusa o operador de cópia
+	*this = img;
+}
+// =========================================================================================
+Image::Image( pixel bg, int w, int h )
+	: pixels(0), buffer(0), width(0), height(0)
+{
+	_allocate(w,h);
 	
 	clear(bg);
+}
+// =========================================================================================
+Image& Image::operator=( const Image& img )
+{
+	if( this != &img )
+	{
+		_allocate( img.width, img.height );
+
+		std::memcpy( buffer, img.buffer, sizeof(pixel)*width*height );
+	}
+
+	return *this;
+
+}
+// =========================================================================================
+Image::~Image()
+{
+	_deallocate();
+}
+// =========================================================================================
+void Image::_allocate( int w, int h )
+{
+	if( w == width && h == height )
+		return;
+
+	_deallocate();
+
+	// alocacao
+	width = w, height = h;
+	pixels = new pixel_row[ height ];
+	buffer = new pixel[ width*height ];
+
+	pixel* it = buffer;
+	for( int i=0; i<height ; ++i, it+=w )
+	{
+		//pixels[i] = &buffer[ i*width ];
+		pixels[i] = it;
+	}
+}
+// =========================================================================================
+void Image::_deallocate()
+{
+	if( pixels )
+	{
+		delete [] buffer;
+		delete [] pixels;
+
+		pixels = 0;
+		width = height = 0;
+	}
 }
 // =========================================================================================
 void Image::clear( pixel bg )
@@ -45,18 +97,6 @@ void Image::clear( pixel bg )
 		*it++ = bg;
 	}
 #endif
-}
-// =========================================================================================
-Image::~Image()
-{
-	if( pixels )
-	{
-		delete [] buffer;	
-		delete [] pixels;
-		
-		pixels = 0;
-		width = height = 0;
-	}
 }
 // =========================================================================================
 int Image::getWidth() const
@@ -157,3 +197,4 @@ pixel Image::getPixelSafe( int i, int j ) const
 	return (pixel)0;
 }
 // =========================================================================================
+

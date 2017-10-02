@@ -20,47 +20,59 @@ static Image img( 0xAC, 32, 16 );
 unsigned char colorA = 0;
 unsigned char colorB = 255;
 
+
+void flipH()
+{
+	const int W = img.getWidth();
+	const int halfW = img.getWidth()/2;
+
+	for( int r=0 ; r<img.getHeight() ; ++r  )
+	{
+		for( int c=0 ; c<halfW ; ++c  )
+		{
+			std::swap( img[r][c], img[r][W-c-1] );
+		}
+	}
+}
+
+void flipV()
+{
+	const int H = img.getHeight();
+	const int halfH = img.getHeight()/2;
+
+	for( int r=0 ; r<halfH ; ++r  )
+	{
+		for( int c=0 ; c<img.getWidth() ; ++c  )
+		{
+			std::swap( img[r][c], img[H-r-1][c] );
+		}
+	}
+}
+
+
 void noise()
 {
 	// novo: preenchimento da imagem com padrão aleatório e uma linha diagonal		
 	for( int i=0 ; i<img.getPixelCount() ; ++i  )
 		img.getPixels()[i] = rand() & 0xFF;
 }
-// =========================================================================================
-void invert( )
+
+void invert()
 {
+	// novo: preenchimento da imagem com padrão aleatório e uma linha diagonal
 	for( int i=0 ; i<img.getPixelCount() ; ++i  )
 		img.getPixels()[i] = ~img.getPixels()[i];
 }
-// =========================================================================================
-void darker( )
+
+void multiply( float f )
 {
+	// novo: preenchimento da imagem com padrão aleatório e uma linha diagonal
 	for( int i=0 ; i<img.getPixelCount() ; ++i  )
-		img.getPixels()[i] = (img.getPixels()[i] < 0x1) ? 0x0 : img.getPixels()[i] - 0x1;
+	{
+		img.getPixels()[i] = std::max( (pixel)0, (pixel)std::min( (int)0xFF, (int)(img.getPixels()[i]*f)) );
+	}
 }
-// =========================================================================================
-void lighter( )
-{
-	for( int i=0 ; i<img.getPixelCount() ; ++i  )
-		img.getPixels()[i] = (img.getPixels()[i] > 0xFE) ? 0xFF : img.getPixels()[i] + 0x1;
-}
-// =========================================================================================
-void flipX( )
-{
-	for( int i=0 ; i<img.getHeight() ; ++i  )
-		for( int j=0 ; j<img.getWidth()/2 ; ++j ){
-			std::swap(img[i][j],img[i][img.getWidth()-1-j]);
-			}
-}
-// =========================================================================================
-void flipY( )
-{
-	for( int i=0 ; i<img.getHeight()/2 ; ++i  )
-		for( int j=0 ; j<img.getWidth() ; ++j ){
-			std::swap(img[i][j],img[img.getHeight()-1-i][j]);
-			}
-}
-// =========================================================================================
+
 int main( int argc, char** argv )
 {
 	glutInit( &argc, argv );
@@ -115,6 +127,28 @@ void trataTeclado( unsigned char key, int x, int y)
 	case '+':
 		colorA += 1;
 		break;
+	case 'h': case 'H':
+		flipH();
+		break;
+	case 'r': case 'R':
+	{
+		Image rot( '@', img.getHeight(), img.getWidth() );
+
+
+		for( int i=0; i<img.getHeight(); ++i )
+			for( int j=0; j<img.getWidth(); ++j )
+			{
+				rot[j][i] = img[i][ img.getWidth() - 1 - j];
+			}
+
+		img = rot;
+
+		glutReshapeWindow(img.getWidth()*PIXEL_SIZE, img.getHeight()*PIXEL_SIZE );
+		break;
+	}
+	case 'v': case 'V':
+		flipV();
+		break;
 	case 'w': case 'W': 
 		img.clear( 255 );		
 		break;
@@ -127,17 +161,11 @@ void trataTeclado( unsigned char key, int x, int y)
 	case 'i':  case 'I':
 		invert();
 		break;
-	case '/':
-		lighter();
+	case 'z':  case 'Z':
+		multiply(1.1f);
 		break;
-	case '*':
-		darker();
-		break;
-	case '6':
-		flipX();
-		break;
-	case '2':
-		flipY();
+	case 'x':  case 'X':
+		multiply(0.9f);
 		break;
 	// Tecla "ESC"
 	case 27:
