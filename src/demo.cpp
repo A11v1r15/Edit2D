@@ -6,7 +6,7 @@
 
 #include "image2dx.h"
 
-#define PIXEL_SIZE 20
+#define PIXEL_SIZE 10
 
 static void meuPintaCena();
 
@@ -20,7 +20,7 @@ static Image img( 0xAC, 32, 16 );
 unsigned char colorA = 0;
 unsigned char colorB = 255;
 
-
+// =========================================================================================
 void flipH()
 {
 	const int W = img.getWidth();
@@ -34,7 +34,7 @@ void flipH()
 		}
 	}
 }
-
+// =========================================================================================
 void flipV()
 {
 	const int H = img.getHeight();
@@ -48,22 +48,21 @@ void flipV()
 		}
 	}
 }
-
-
+// =========================================================================================
 void noise()
 {
 	// novo: preenchimento da imagem com padrão aleatório e uma linha diagonal		
 	for( int i=0 ; i<img.getPixelCount() ; ++i  )
 		img.getPixels()[i] = rand() & 0xFF;
 }
-
+// =========================================================================================
 void invert()
 {
 	// novo: preenchimento da imagem com padrão aleatório e uma linha diagonal
 	for( int i=0 ; i<img.getPixelCount() ; ++i  )
 		img.getPixels()[i] = ~img.getPixels()[i];
 }
-
+// =========================================================================================
 void multiply( float f )
 {
 	// novo: preenchimento da imagem com padrão aleatório e uma linha diagonal
@@ -72,7 +71,23 @@ void multiply( float f )
 		img.getPixels()[i] = std::max( (pixel)0, (pixel)std::min( (int)0xFF, (int)(img.getPixels()[i]*f)) );
 	}
 }
+// =========================================================================================
+void rotate( int a )
+{
+	Image rot( '@', img.getHeight(), img.getWidth() );
 
+
+		for( int i=0; i<img.getHeight(); ++i )
+			for( int j=0; j<img.getWidth(); ++j )
+			{
+				rot[j][i] = img[i][ img.getWidth() - 1 - j];
+			}
+
+		img = rot;
+
+		glutReshapeWindow(img.getWidth()*PIXEL_SIZE, img.getHeight()*PIXEL_SIZE );
+}
+// =========================================================================================
 int main( int argc, char** argv )
 {
 	glutInit( &argc, argv );
@@ -132,18 +147,7 @@ void trataTeclado( unsigned char key, int x, int y)
 		break;
 	case 'r': case 'R':
 	{
-		Image rot( '@', img.getHeight(), img.getWidth() );
-
-
-		for( int i=0; i<img.getHeight(); ++i )
-			for( int j=0; j<img.getWidth(); ++j )
-			{
-				rot[j][i] = img[i][ img.getWidth() - 1 - j];
-			}
-
-		img = rot;
-
-		glutReshapeWindow(img.getWidth()*PIXEL_SIZE, img.getHeight()*PIXEL_SIZE );
+		rotate( 1 );
 		break;
 	}
 	case 'v': case 'V':
