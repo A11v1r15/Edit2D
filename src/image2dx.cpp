@@ -6,6 +6,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <algorithm>
 
 // =========================================================================================
 // Classe Imagem
@@ -171,6 +172,60 @@ void Image::display() const
 		}
 	
 	glEnd();
+}
+// =========================================================================================
+void Image::hline(pixel cor, int y, int x1, int x2){
+	if (y < 0 || y >= height )
+		return;
+
+	const int minX = std::max( std::min( x1 , x2 ),         0);
+	if (minX >= width )
+		return;
+
+	const int maxX = std::min( std::max( x1 , x2 ), width - 1);
+	if (maxX < 0 )
+		return;
+
+	for( int  x = minX; x <= maxX; x++ ){
+		setPixel(cor, x, y);
+	}
+}
+// =========================================================================================
+void Image::vline(pixel cor, int x, int y1, int y2){
+	if (x < 0 || x >= width )
+		return;
+
+	const int minY = std::max( std::min( y1 , y2 ),         0);
+	if (minY >= height )
+		return;
+
+	const int maxY = std::min( std::max( y1 , y2 ), height - 1);
+	if (maxY < 0 )
+		return;
+
+	for( int  y = minY; y <= maxY; y++ ){
+		setPixel(cor, x, y);
+	}
+}
+// =========================================================================================
+void Image::drawRect(pixel cor, int x1, int y1, int x2, int y2){
+	hline(cor, y1, x1, x2);
+	hline(cor, y2, x1, x2);
+	vline(cor, x1, y1, y2);
+	vline(cor, x2, y1, y2);
+}
+// =========================================================================================
+void Image::fillRect(pixel cor, int x1, int y1, int x2, int y2){
+	const int minX = std::min( x1 , x2 );
+	const int maxX = std::max( x1 , x2 );
+	const int minY = std::min( y1 , y2 );
+	const int maxY = std::max( y1 , y2 );
+	if (minX >= width || maxX < 0 || minY >= height || maxY < 0)
+		return;
+
+	for( int y = minY; y <= maxY; y++){
+		hline(cor, y, minX, maxX);
+	}
 }
 // =========================================================================================
 void Image::setPixel( pixel cor, int i, int j )

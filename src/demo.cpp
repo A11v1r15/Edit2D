@@ -138,16 +138,28 @@ void trataTeclado( unsigned char key, int x, int y)
 {
 	switch(key)
 	{
+	case '1':
+		img.hline( 0x66, img.getHeight()/2, 0, img.getWidth());
+		break;
+	case '2':
+		img.vline( 0x66, img.getWidth()/2, 0, img.getHeight());
+		break;
+	case '3':
+		img.drawRect( 0x99, 0, 0, img.getHeight()/2, img.getWidth() / 2);
+		break;
+	case '4':
+		img.fillRect( 0x66, 0, 0 ,img.getHeight()/2, img.getWidth() / 2);
+		break;
 	case 'A': case 'a': 
 		std::cout << std::endl << "Comandos do Editor:" << std::endl;
 		std::cout << "\tW para limpar a imagem com branco" << std::endl;
 		std::cout << "\tB para limpar a imagem com branco" << std::endl;
+		std::cout << "\tN para uma imagem com ruído" << std::endl;
 		std::cout << "\tI para inverter a imagem" << std::endl;
 		std::cout << "\tH para espelhar a imagem horizontalmente" << std::endl;
 		std::cout << "\tV para espelhar a imagem verticalmente" << std::endl;
-		std::cout << "\tN para uma imagem com ruído" << std::endl;
-		std::cout << "\tR para rotacionar imagem no sentido anti-horario" << std::endl;
-		std::cout << "\tE para rotacionar imagem no sentido anti" << std::endl;
+		std::cout << "\tR para rotacionar imagem no sentido anti" << std::endl;
+		std::cout << "\tE para rotacionar imagem no sentido anti-horario" << std::endl;
 		std::cout << "\t+ e - para alterar a cor principal" << std::endl;
 		std::cout << "\tZ e X para alterar a cor da imagem inteira" << std::endl;
 		std::cout << "\tEsc para sair do jogo" << std::endl;

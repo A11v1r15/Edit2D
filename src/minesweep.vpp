@@ -19,23 +19,34 @@ static Image img( 0xFF, 10, 12 );
 // Imagem resolvida
 static Image res( 0xFF, 10, 12 );
 
-unsigned char colorA = 0;
-unsigned char colorB = 255;
+unsigned char colorA = 1;
+//unsigned char colorB = 255;
 
 void newGame( ){
-	for( int i=0 ; i<img.getPixelCount() ; ++i  )
-		img.getPixels()[i] = ((rand() & 0xFF) > 0xE0) ? 0x00 : 0xFF;
-	for( int i=0; i<img.getHeight(); ++i )
-		for( int j=0; j<img.getWidth(); ++j ){
-			if (i > 0 && img.getPixel( i - 1, j) == 0x00)
-				img.setPixel( img.getPixel(i, j) - 25, i, j);
-			if (i < img.getWidth() - 1 && img.getPixel( i + 1, j) == 0x00)
-				img.setPixel( img.getPixel(i, j) - 25, i, j);
-			if (j > 0 && img.getPixel( i, j - 1) == 0x00)
-				img.setPixel( img.getPixel(i, j) - 25, i, j);
-			if (j < img.getHeight() - 1 && img.getPixel( i, j + 1) == 0x00)
-				img.setPixel( img.getPixel(i, j) - 25, i, j);
+	for( int i=0 ; i<res.getPixelCount() ; ++i  )
+		res.getPixels()[i] = ((rand() & 0xFF) > 0xE0) ? 0x01 : 0xFF;
+	for( int i=0; i<res.getWidth(); ++i ){
+		for( int j=0; j<res.getHeight(); ++j ){
+			if (res.getPixelSafe( i - 1, j - 1) == 0x01 && res.getPixel(i, j) != 0x01)
+				res.setPixel( res.getPixel(i, j) - 25, i, j);
+			if (res.getPixelSafe( i - 1, j) == 0x01 && res.getPixel(i, j) != 0x01)
+				res.setPixel( res.getPixel(i, j) - 25, i, j);
+			if (res.getPixelSafe( i - 1, j + 1) == 0x01 && res.getPixel(i, j) != 0x01)
+				res.setPixel( res.getPixel(i, j) - 25, i, j);
+			if (res.getPixelSafe( i, j - 1) == 0x01 && res.getPixel(i, j) != 0x01)
+				res.setPixel( res.getPixel(i, j) - 25, i, j);
+			if (res.getPixelSafe( i, j) == 0x01 && res.getPixel(i, j) != 0x01)
+				res.setPixel( res.getPixel(i, j) - 25, i, j);
+			if (res.getPixelSafe( i, j + 1) == 0x01 && res.getPixel(i, j) != 0x01)
+				res.setPixel( res.getPixel(i, j) - 25, i, j);
+			if (res.getPixelSafe( i + 1, j - 1) == 0x01 && res.getPixel(i, j) != 0x01)
+				res.setPixel( res.getPixel(i, j) - 25, i, j);
+			if (res.getPixelSafe( i + 1, j) == 0x01 && res.getPixel(i, j) != 0x01)
+				res.setPixel( res.getPixel(i, j) - 25, i, j);
+			if (res.getPixelSafe( i + 1, j + 1) == 0x01 && res.getPixel(i, j) != 0x01)
+				res.setPixel( res.getPixel(i, j) - 25, i, j);
 		}
+	}
 }
 
 int main( int argc, char** argv )
@@ -100,7 +111,9 @@ void trataMouseClick( int button, int state, int x, int y)
 	
 	if( state == GLUT_DOWN )
 	{
-		color = (button==0)?  res.getPixel( x , y ) : colorB;
+		color = (button==0)?  res.getPixel( x , y ) : colorA;
+		if(res.getPixel( x , y ) == 0x01 )
+			std::cout << "PERDEU" << std::endl;
 		img.setPixelSafe( color, x, y );
 
 	}else

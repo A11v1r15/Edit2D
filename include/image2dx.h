@@ -32,7 +32,12 @@ public:
 	int getWidth() const;
 	int getHeight() const;
 	int getPixelCount() const;
-	
+
+	void hline(pixel cor, int y, int x1, int x2);
+	void vline(pixel cor, int x, int y1, int y2);
+	void drawRect(pixel cor, int x1, int y1, int x2, int y2);
+	void fillRect(pixel cor, int x1, int y1, int x2, int y2);
+
 	pixel* operator[] (int i)
 	{
 		return pixels[i];
