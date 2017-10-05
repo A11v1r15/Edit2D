@@ -147,17 +147,8 @@ void trataTeclado( unsigned char key, int x, int y)
 	case '\'':
 		tool = 0;
 		break;
-	case '1':
-		tool = 1;
-		break;
-	case '2':
-		tool = 2;
-		break;
-	case '3':
-		tool = 3;
-		break;
-	case '4':
-		tool = 4;
+	case '1': case '2': case '3': case '4': case '5':
+		tool = key - '0';
 		break;
 	case 'A': case 'a': 
 		std::cout << std::endl << "Comandos do Editor:" << std::endl;
@@ -262,19 +253,32 @@ void trataMouseMove( int x, int y)
 			break;
 			case 1:
 			buffer = img;
-			buffer.hline(color, initialY, initialX, x);
+			buffer.hLine(color, initialY, initialX, x);
+			/*if(glutGetModifiers() & GLUT_ACTIVE_SHIFT){
+			    if(std::abs(initialX - x) < std::abs(initialY - y)){
+					buffer.hLine(color, initialY, initialX, x);
+			    } else {
+					buffer.vLine(color, initialX, initialY, y);
+			    }
+			} else {
+				buffer.dLine(color, initialY, initialX, x, y);
+			}*/
 			break;
 			case 2:
 			buffer = img;
-			buffer.vline(color, initialX, initialY, y);
+			buffer.vLine(color, initialX, initialY, y);
 			break;
 			case 3:
 			buffer = img;
-			buffer.drawRect(color, initialY, initialX, x, y);
+			buffer.dLine(color, initialY, initialX, x, y);
 			break;
 			case 4:
 			buffer = img;
-			buffer.fillRect(color, initialY, initialX, x, y);
+			buffer.drawRect(color, initialX, initialY, x, y);
+			break;
+			case 5:
+			buffer = img;
+			buffer.fillRect(color, initialX, initialY, x, y);
 			break;
 		}
 	}

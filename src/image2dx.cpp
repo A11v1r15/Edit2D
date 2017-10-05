@@ -174,7 +174,7 @@ void Image::display() const
 	glEnd();
 }
 // =========================================================================================
-void Image::hline(pixel cor, int y, int x1, int x2){
+void Image::hLine(pixel cor, int y, int x1, int x2){
 	if (y < 0 || y >= height )
 		return;
 
@@ -191,7 +191,7 @@ void Image::hline(pixel cor, int y, int x1, int x2){
 	}
 }
 // =========================================================================================
-void Image::vline(pixel cor, int x, int y1, int y2){
+void Image::vLine(pixel cor, int x, int y1, int y2){
 	if (x < 0 || x >= width )
 		return;
 
@@ -208,11 +208,37 @@ void Image::vline(pixel cor, int x, int y1, int y2){
 	}
 }
 // =========================================================================================
+void Image::dLine(pixel cor, int x1, int y1, int x2, int y2){
+    int dx = x2 - x1;
+    int dy = y2 - y1;
+
+    int d = dy - (dx/2);
+    int x = x1, y = y1;
+
+    setPixel(cor, x, y);
+
+    while (x < x2)
+    {
+        x++;
+
+        if (d < 0)
+            d = d + dy;
+
+        else
+        {
+            d += (dy - dx);
+            y++;
+        }
+
+        setPixel(cor, x, y);
+    }
+}
+// =========================================================================================
 void Image::drawRect(pixel cor, int x1, int y1, int x2, int y2){
-	hline(cor, y1, x1, x2);
-	hline(cor, y2, x1, x2);
-	vline(cor, x1, y1, y2);
-	vline(cor, x2, y1, y2);
+	hLine(cor, y1, x1, x2);
+	hLine(cor, y2, x1, x2);
+	vLine(cor, x1, y1, y2);
+	vLine(cor, x2, y1, y2);
 }
 // =========================================================================================
 void Image::fillRect(pixel cor, int x1, int y1, int x2, int y2){
@@ -224,7 +250,7 @@ void Image::fillRect(pixel cor, int x1, int y1, int x2, int y2){
 		return;
 
 	for( int y = minY; y <= maxY; y++){
-		hline(cor, y, minX, maxX);
+		hLine(cor, y, minX, maxX);
 	}
 }
 // =========================================================================================

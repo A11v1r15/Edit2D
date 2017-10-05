@@ -33,8 +33,9 @@ public:
 	int getHeight() const;
 	int getPixelCount() const;
 
-	void hline(pixel cor, int y, int x1, int x2);
-	void vline(pixel cor, int x, int y1, int y2);
+	void hLine(pixel cor, int y, int x1, int x2);
+	void vLine(pixel cor, int x, int y1, int y2);
+	void dLine(pixel cor, int x1, int y1, int x2, int y2);
 	void drawRect(pixel cor, int x1, int y1, int x2, int y2);
 	void fillRect(pixel cor, int x1, int y1, int x2, int y2);
 
