@@ -15,10 +15,13 @@ static void trataMouseClick( int button, int state, int x, int y);
 static void trataMouseMove( int x, int y);
 
 // NOVO: imagem a ser renderizada
-static Image img( 0xAC, 10, 12 );
+static Image img( 0xFF, 19, 13 );
+static Image buffer = img;
 
 unsigned char colorA = 0;
 unsigned char colorB = 255;
+int tool = 0;
+bool isBuffering = false;
 
 // =========================================================================================
 void flipH()
@@ -128,7 +131,10 @@ static void meuPintaCena()
 	// gera a imagem com ruído
 	//noise();
 	// exibe a imagem
-	img.display();	
+	if(isBuffering)
+		buffer.display();
+	else
+		img.display();	
 	
 	glutSwapBuffers();
 	glutPostRedisplay();	
@@ -138,17 +144,20 @@ void trataTeclado( unsigned char key, int x, int y)
 {
 	switch(key)
 	{
+	case '\'':
+		tool = 0;
+		break;
 	case '1':
-		img.hline( 0x66, img.getHeight()/2, 0, img.getWidth());
+		tool = 1;
 		break;
 	case '2':
-		img.vline( 0x66, img.getWidth()/2, 0, img.getHeight());
+		tool = 2;
 		break;
 	case '3':
-		img.drawRect( 0x99, 0, 0, img.getHeight()/2, img.getWidth() / 2);
+		tool = 3;
 		break;
 	case '4':
-		img.fillRect( 0x66, 0, 0 ,img.getHeight()/2, img.getWidth() / 2);
+		tool = 4;
 		break;
 	case 'A': case 'a': 
 		std::cout << std::endl << "Comandos do Editor:" << std::endl;
@@ -174,15 +183,11 @@ void trataTeclado( unsigned char key, int x, int y)
 		flipH();
 		break;
 	case 'r': case 'R':
-	{
 		rotate(1);
 		break;
-	}
 	case 'e': case 'E':
-	{
 		rotate(-1);
 		break;
-	}
 	case 'v': case 'V':
 		flipV();
 		break;
@@ -212,6 +217,8 @@ void trataTeclado( unsigned char key, int x, int y)
 }
 
 int color = -1;
+int initialX;
+int initialY;
 
 void trataMouseClick( int button, int state, int x, int y)
 {
@@ -219,12 +226,26 @@ void trataMouseClick( int button, int state, int x, int y)
 	
 	if( state == GLUT_DOWN )
 	{
-		color = (button==0)?  colorA : colorB;
-		img.setPixelSafe( color, x, y );
-
+		buffer = img;
+		isBuffering = true;
+		switch(tool){
+			case 0:
+			color = (button==0)?  colorA : colorB;
+			buffer.setPixelSafe( color, x, y );
+			break;
+			case 1: case 2: case 3: case 4:
+			initialX = x;
+			initialY = y;
+			color = (button==0)?  colorA : colorB;
+			break;
+		}
 	}else
 	if( state == GLUT_UP )
 	{
+		img = buffer;
+		isBuffering = false;
+		initialX = -1;
+		initialY = -1;
 		color = -1;
 	}
 }
@@ -235,6 +256,26 @@ void trataMouseMove( int x, int y)
 
 	if( color != -1 )
 	{		
-		img.setPixelSafe( color, x, y );
+		switch(tool){
+			case 0:
+			buffer.setPixelSafe( color, x, y );
+			break;
+			case 1:
+			buffer = img;
+			buffer.hline(color, initialY, initialX, x);
+			break;
+			case 2:
+			buffer = img;
+			buffer.vline(color, initialX, initialY, y);
+			break;
+			case 3:
+			buffer = img;
+			buffer.drawRect(color, initialY, initialX, x, y);
+			break;
+			case 4:
+			buffer = img;
+			buffer.fillRect(color, initialY, initialX, x, y);
+			break;
+		}
 	}
 }
