@@ -224,7 +224,7 @@ void trataMouseClick( int button, int state, int x, int y)
 			color = (button==0)?  colorA : colorB;
 			buffer.setPixelSafe( color, x, y );
 			break;
-			case 1: case 2: case 3: case 4:
+			case 1: case 2: case 3: case 4: case 5:
 			initialX = x;
 			initialY = y;
 			color = (button==0)?  colorA : colorB;
@@ -270,7 +270,7 @@ void trataMouseMove( int x, int y)
 			break;
 			case 3:
 			buffer = img;
-			buffer.dLine(color, initialY, initialX, x, y);
+			buffer.dLine(color, initialX, initialY, x, y);
 			break;
 			case 4:
 			buffer = img;
