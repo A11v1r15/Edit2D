@@ -4,7 +4,11 @@
 #include <iostream>
 #include <algorithm>
 
-#include "image2dx.h"
+#include <map>
+
+#include "drawingTool.h"
+#include "pixelTool.h"
+
 
 #define PIXEL_SIZE 15
 
@@ -16,12 +20,14 @@ static void trataMouseMove( int x, int y);
 
 // NOVO: imagem a ser renderizada
 static Image img( 0xFF, 19, 13 );
-static Image buffer = img;
+static Image preview = img;
+
+typedef std::map<unsigned char, DrawingTool* > ToolMap;
+static ToolMap drawingTools;
+static DrawingTool *tool = nullptr;
 
 unsigned char colorA = 0;
 unsigned char colorB = 255;
-int tool = 0;
-bool isBuffering = false;
 
 // =========================================================================================
 void flipH()
@@ -112,7 +118,26 @@ int main( int argc, char** argv )
 	glutKeyboardFunc( trataTeclado );
 	glutMouseFunc( trataMouseClick );
 	glutMotionFunc( trataMouseMove );
-	
+
+	PenTool penTool;
+	PixelTool pixelTool;
+	LineTool lineTool;
+
+	drawingTools[ '0' ] = &pixelTool;
+	drawingTools[ '1' ] = &penTool;
+	drawingTools[ '2' ] = &lineTool;
+
+
+
+	/*
+	// TODO se alguém quiser, pode criar uma janela secundária para lidar com as ferramentas
+	glutCreateWindow( "Ferramentas" );
+	glutDisplayFunc( meuPintaCena );
+	glutKeyboardFunc( trataTeclado );
+	glutMouseFunc( trataMouseClick );
+	glutMotionFunc( trataMouseMove );
+	*/
+
 	glutMainLoop();
 	
 	
@@ -131,10 +156,7 @@ static void meuPintaCena()
 	// gera a imagem com ruído
 	//noise();
 	// exibe a imagem
-	if(isBuffering)
-		buffer.display();
-	else
-		img.display();	
+	img.display();	
 	
 	glutSwapBuffers();
 	glutPostRedisplay();	
@@ -142,14 +164,19 @@ static void meuPintaCena()
 
 void trataTeclado( unsigned char key, int x, int y)
 {
+	ToolMap::iterator it = drawingTools.find(key);
+	if( it != drawingTools.end() )
+	{
+		tool = it->second;
+		tool->reset();
+		return;
+	}else
+	{
+		tool = nullptr;
+	}
+
 	switch(key)
 	{
-	case '\'':
-		tool = 0;
-		break;
-	case '1': case '2': case '3': case '4': case '5':
-		tool = key - '0';
-		break;
 	case 'A': case 'a': 
 		std::cout << std::endl << "Comandos do Editor:" << std::endl;
 		std::cout << "\tW para limpar a imagem com branco" << std::endl;
@@ -205,11 +232,12 @@ void trataTeclado( unsigned char key, int x, int y)
 		exit(-1);
 		break; 	
 	}
+	
+	
+	glutPostRedisplay();
 }
 
 int color = -1;
-int initialX;
-int initialY;
 
 void trataMouseClick( int button, int state, int x, int y)
 {
@@ -217,69 +245,46 @@ void trataMouseClick( int button, int state, int x, int y)
 	
 	if( state == GLUT_DOWN )
 	{
-		buffer = img;
-		isBuffering = true;
-		switch(tool){
-			case 0:
-			color = (button==0)?  colorA : colorB;
-			buffer.setPixelSafe( color, x, y );
-			break;
-			case 1: case 2: case 3: case 4:
-			initialX = x;
-			initialY = y;
-			color = (button==0)?  colorA : colorB;
-			break;
+		/*color = (button==0)?  colorA : colorB;
+		img.setPixelSafe( color, x, y );
+		*/
+
+		if( tool )
+		{
+			preview = img;
+			if( tool->onMouseDown( preview, x, y ) )
+			{
+				img = preview;
+			}
 		}
+
+
 	}else
 	if( state == GLUT_UP )
 	{
-		img = buffer;
-		isBuffering = false;
-		initialX = -1;
-		initialY = -1;
 		color = -1;
+
+		if( tool )
+		{
+			tool->onMouseUp( img, x, y );
+		}
 	}
+
+	glutPostRedisplay();
 }
 
 void trataMouseMove( int x, int y)
 {
 	x/=PIXEL_SIZE, y/=PIXEL_SIZE;
 
-	if( color != -1 )
-	{		
-		switch(tool){
-			case 0:
-			buffer.setPixelSafe( color, x, y );
-			break;
-			case 1:
-			buffer = img;
-			buffer.hLine(color, initialY, initialX, x);
-			/*if(glutGetModifiers() & GLUT_ACTIVE_SHIFT){
-			    if(std::abs(initialX - x) < std::abs(initialY - y)){
-					buffer.hLine(color, initialY, initialX, x);
-			    } else {
-					buffer.vLine(color, initialX, initialY, y);
-			    }
-			} else {
-				buffer.dLine(color, initialY, initialX, x, y);
-			}*/
-			break;
-			case 2:
-			buffer = img;
-			buffer.vLine(color, initialX, initialY, y);
-			break;
-			case 3:
-			buffer = img;
-			buffer.dLine(color, initialY, initialX, x, y);
-			break;
-			case 4:
-			buffer = img;
-			buffer.drawRect(color, initialX, initialY, x, y);
-			break;
-			case 5:
-			buffer = img;
-			buffer.fillRect(color, initialX, initialY, x, y);
-			break;
+	if( tool )
+	{
+		preview = img;
+		if( tool->onMouseMove( preview, x, y ) )
+		{
+			img = preview;
 		}
 	}
+
+	glutPostRedisplay();
 }

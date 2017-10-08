@@ -38,6 +38,7 @@ public:
 	void dLine(pixel cor, int x1, int y1, int x2, int y2);
 	void drawRect(pixel cor, int x1, int y1, int x2, int y2);
 	void fillRect(pixel cor, int x1, int y1, int x2, int y2);
+	void lineMidPoint( pixel cor, int x1, int y1, int x2, int y2  );
 
 	pixel* operator[] (int i)
 	{

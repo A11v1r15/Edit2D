@@ -254,6 +254,37 @@ void Image::fillRect(pixel cor, int x1, int y1, int x2, int y2){
 	}
 }
 // =========================================================================================
+void Image::lineMidPoint( pixel cor, int x1, int y1, int x2, int y2  )
+{
+#if 1
+	const int dx = abs(x2-x1);
+	const int dy = abs(y2-y1);
+
+	setPixelSafe(cor, x1,y1 );
+	setPixelSafe(cor, x2,y2 );
+
+	if( dx <= 1 && dy <= 1 )
+	{
+
+	}
+#else
+	// nunca faça isso: pois a recursão é infinita
+	if( (x1 == x2) && (y1 == y2) )
+	{
+		setPixelSafe(cor, x1,y1);
+	}
+#endif
+	else
+	{
+		const int mx = (x1+x2)>>1;
+		const int my = (y1+y2)>>1;
+
+		lineMidPoint( cor, x1,y1, mx, my);
+		lineMidPoint( cor, mx, my, x2,y2);
+	}
+
+}
+// =========================================================================================
 void Image::setPixel( pixel cor, int i, int j )
 {
 	pixels[j][i] = cor;
