@@ -6,6 +6,9 @@ Exemplo de editor de imagens bem simples usando OpenGL e nossa classe Image:
  
 Como compilar?
  - No Linux, basta usar o comando "./build.sh" no diretório do projeto.
+   Pode ser preciso mudar o status de executável desse script. 
+   Para isso, use o comando "chmod +x build.sh" antes de usar o comando
+   "./build.sh" 
  
 Requisitos para compilar esse exemplo:
  - ter biblioteca OpenGL instalada no seu compilador/ambiente. Geralmente ela já vem instalada;

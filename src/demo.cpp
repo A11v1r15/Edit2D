@@ -277,50 +277,12 @@ void trataMouseMove( int x, int y)
 {
 	x/=PIXEL_SIZE, y/=PIXEL_SIZE;
 
-<<<<<<< HEAD
 	if( tool )
 	{
 		preview = img;
 		if( tool->onMouseMove( preview, x, y ) )
 		{
 			img = preview;
-=======
-	if( color != -1 )
-	{		
-		switch(tool){
-			case 0:
-			buffer.setPixelSafe( color, x, y );
-			break;
-			case 1:
-			buffer = img;
-			buffer.hLine(color, initialY, initialX, x);
-			/*if(glutGetModifiers() & GLUT_ACTIVE_SHIFT){
-			    if(std::abs(initialX - x) < std::abs(initialY - y)){
-					buffer.hLine(color, initialY, initialX, x);
-			    } else {
-					buffer.vLine(color, initialX, initialY, y);
-			    }
-			} else {
-				buffer.dLine(color, initialY, initialX, x, y);
-			}*/
-			break;
-			case 2:
-			buffer = img;
-			buffer.vLine(color, initialX, initialY, y);
-			break;
-			case 3:
-			buffer = img;
-			buffer.dLine(color, initialX, initialY, x, y);
-			break;
-			case 4:
-			buffer = img;
-			buffer.drawRect(color, initialX, initialY, x, y);
-			break;
-			case 5:
-			buffer = img;
-			buffer.fillRect(color, initialX, initialY, x, y);
-			break;
->>>>>>> 24359659e2db2256b554df43533213530f1fc58a
 		}
 	}
 
