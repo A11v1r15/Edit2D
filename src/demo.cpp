@@ -15,7 +15,7 @@ static void trataMouseClick( int button, int state, int x, int y);
 static void trataMouseMove( int x, int y);
 
 // NOVO: imagem a ser renderizada
-static Image img( 0xFF, 19, 13 );
+static Image img( 0xFF, 30, 20 );
 static Image buffer = img;
 
 unsigned char colorA = 0;
@@ -253,30 +253,21 @@ void trataMouseMove( int x, int y)
 			break;
 			case 1:
 			buffer = img;
-			buffer.hLine(color, initialY, initialX, x);
-			/*if(glutGetModifiers() & GLUT_ACTIVE_SHIFT){
-			    if(std::abs(initialX - x) < std::abs(initialY - y)){
-					buffer.hLine(color, initialY, initialX, x);
-			    } else {
-					buffer.vLine(color, initialX, initialY, y);
-			    }
+			if(std::abs(initialX - x) > std::abs(initialY - y)){
+				buffer.hLine(color, initialY, initialX, x);
 			} else {
-				buffer.dLine(color, initialY, initialX, x, y);
-			}*/
+				buffer.vLine(color, initialX, initialY, y);
+			}
 			break;
 			case 2:
 			buffer = img;
-			buffer.vLine(color, initialX, initialY, y);
+			buffer.dLine(color, initialX, initialY, x, y);
 			break;
 			case 3:
 			buffer = img;
-			buffer.dLine(color, initialX, initialY, x, y);
-			break;
-			case 4:
-			buffer = img;
 			buffer.drawRect(color, initialX, initialY, x, y);
 			break;
-			case 5:
+			case 4:
 			buffer = img;
 			buffer.fillRect(color, initialX, initialY, x, y);
 			break;

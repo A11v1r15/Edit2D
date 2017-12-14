@@ -1,6 +1,5 @@
 #include "image2dx.h"
 
-// NOVO: o include do OpenGL está aqui pois não precisamos saber como ela é pintada
 #include <GL/gl.h>
 #include <iostream>
 #include <cstdio>
@@ -209,29 +208,40 @@ void Image::vLine(pixel cor, int x, int y1, int y2){
 }
 // =========================================================================================
 void Image::dLine(pixel cor, int x1, int y1, int x2, int y2){
-    int dx = x2 - x1;
-    int dy = y2 - y1;
+    int w = x2 - x1 ;
+	int h = y2 - y1 ;
+	int dx1 = 0, dy1 = 0, dx2 = 0, dy2 = 0 ;
+	if (w<0) dx1 = -1 ; else if (w>0) dx1 = 1 ;
+	if (h<0) dy1 = -1 ; else if (h>0) dy1 = 1 ;
+	if (w<0) dx2 = -1 ; else if (w>0) dx2 = 1 ;
 
-    int d = dy - (dx/2);
-    int x = x1, y = y1;
+	int longest = abs(w) ;
+	int shortest = abs(h) ;
 
-    setPixel(cor, x, y);
-
-    while (x < x2)
-    {
-        x++;
-
-        if (d < 0)
-            d = d + dy;
-
-        else
-        {
-            d += (dy - dx);
-            y++;
-        }
-
-        setPixel(cor, x, y);
-    }
+	if (!(longest>shortest))
+	{
+		longest = abs(h) ;
+		shortest = abs(w) ;
+		if (h<0) dy2 = -1 ;
+		else if (h>0) dy2 = 1 ;
+		dx2 = 0 ;
+	}
+	int numerator = longest >> 1 ;
+	int x = x1, y = y1;
+	for (int i=0;i<=longest;i++)
+	{
+		setPixelSafe(cor,x,y) ;
+		numerator += shortest ;
+		if (!(numerator<longest))
+		{
+			numerator -= longest ;
+			x += dx1 ;
+			y += dy1 ;
+		} else {
+			x += dx2 ;
+			y += dy2 ;
+		}
+	}
 }
 // =========================================================================================
 void Image::drawRect(pixel cor, int x1, int y1, int x2, int y2){
@@ -252,6 +262,29 @@ void Image::fillRect(pixel cor, int x1, int y1, int x2, int y2){
 	for( int y = minY; y <= maxY; y++){
 		hLine(cor, y, minX, maxX);
 	}
+}
+// =========================================================================================
+void Image::lineMidPoint( pixel cor, int x1, int y1, int x2, int y2  )
+{
+	const int dx = abs(x2-x1);
+	const int dy = abs(y2-y1);
+
+	setPixelSafe(cor, x1,y1 );
+	setPixelSafe(cor, x2,y2 );
+
+	if( dx <= 1 && dy <= 1 )
+	{
+
+	}
+	else
+	{
+		const int mx = (x1+x2)>>1;
+		const int my = (y1+y2)>>1;
+
+		lineMidPoint( cor, x1,y1, mx, my);
+		lineMidPoint( cor, mx, my, x2,y2);
+	}
+
 }
 // =========================================================================================
 void Image::setPixel( pixel cor, int i, int j )
